@@ -16,6 +16,8 @@ oled_reset = digitalio.DigitalInOut(board.D4)
 # to the right size for your display!
 WIDTH = 128
 HEIGHT = 64
+X = 0
+Y = 0
 
 # Use for I2C.
 i2c = board.I2C()
@@ -76,14 +78,11 @@ while True:
     Disk = subprocess.check_output(cmd, shell = True )
     
     # Render stats
-    x = 0
-    y = 0
-    
-    draw.text((x, y),       "NAME: " + HOSTNAME, font=font, fill=255)
-    draw.text((x, y+12),    "IP  : " + str(IP),  font=font, fill=255)
-    draw.text((x, y+24),    str(CPU) + " | " + str(MemUsage), font=font, fill=255)
-    draw.text((x, y+36),    str(MemUsage),  font=font, fill=255)
-    draw.text((x, y+48),    str(Disk),  font=font, fill=255)
+    draw.text((X, Y),       "NAME: " + HOSTNAME, font=font, fill=255)
+    draw.text((X, Y+12),    "IP  : " + str(IP),  font=font, fill=255)
+    draw.text((X, Y+24),    str(CPU) + " | " + str(MemUsage), font=font, fill=255)
+    draw.text((X, Y+36),    str(MemUsage),  font=font, fill=255)
+    draw.text((X, Y+48),    str(Disk),  font=font, fill=255)
     
     # Display image
     oled.image(image)
