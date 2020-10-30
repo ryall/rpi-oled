@@ -7,6 +7,7 @@ import board
 import digitalio
 from PIL import Image, ImageDraw, ImageFont
 import adafruit_ssd1306
+import subprocess
 
 # Define the Reset Pin
 oled_reset = digitalio.DigitalInOut(board.D4)
