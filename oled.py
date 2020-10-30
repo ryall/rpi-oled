@@ -73,16 +73,16 @@ while True:
     cmd = "top -bn1 | grep load | awk '{printf \"CPU: %3d%%\", $(NF-2)*100/4}'"
     CPU = subprocess.check_output(cmd, shell = True )
     cmd = "free -m | awk 'NR==2{printf \"MEM: %3d%%\", $3*100/$2 }'"
-    MemUsage = subprocess.check_output(cmd, shell = True )
+    MEM = subprocess.check_output(cmd, shell = True )
     cmd = "df -h | awk '$NF==\"/\"{printf \"Disk: %d/%dGB %s\", $3,$2,$5}'"
-    Disk = subprocess.check_output(cmd, shell = True )
+    DISK = subprocess.check_output(cmd, shell = True )
     
     # Render stats
-    draw.text((X, Y),       "NAME: " + HOSTNAME, font=font, fill=255)
+    draw.text((X, Y),       "NAME: " + str(HOSTNAME), font=font, fill=255)
     draw.text((X, Y+12),    "IP  : " + str(IP),  font=font, fill=255)
     draw.text((X, Y+24),    str(CPU) + " | " + str(MemUsage), font=font, fill=255)
-    draw.text((X, Y+36),    str(MemUsage),  font=font, fill=255)
-    draw.text((X, Y+48),    str(Disk),  font=font, fill=255)
+    draw.text((X, Y+36),    str(MEM_USAGE),  font=font, fill=255)
+    draw.text((X, Y+48),    str(DISK),  font=font, fill=255)
     
     # Display image
     oled.image(image)
