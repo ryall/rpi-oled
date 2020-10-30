@@ -80,7 +80,7 @@ while True:
     # Render stats
     draw.text((X, Y),       "NAME: " + str(HOSTNAME), font=font, fill=255)
     draw.text((X, Y+12),    "IP  : " + str(IP),  font=font, fill=255)
-    draw.text((X, Y+24),    str(CPU) + " | " + str(MemUsage), font=font, fill=255)
+    draw.text((X, Y+24),    str(CPU), font=font, fill=255)
     draw.text((X, Y+36),    str(MEM),  font=font, fill=255)
     draw.text((X, Y+48),    str(DISK),  font=font, fill=255)
     
