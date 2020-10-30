@@ -79,8 +79,8 @@ while True:
     # Render stats
     draw.text((X, Y), "Host: " + str(HOSTNAME), font=font, fill=255)
     draw.text((X, Y+12), "IP: " + str(IP), font=font, fill=255)
-    draw.text((X, Y+24), "CPU: " + str(RAM), font=font, fill=255)
-    draw.text((X, Y+36), "RAM: " + str(MEM), font=font, fill=255)
+    draw.text((X, Y+24), "CPU: " + str(CPU), font=font, fill=255)
+    draw.text((X, Y+36), "RAM: " + str(RAM), font=font, fill=255)
     draw.text((X, Y+48), "Disk: " + str(DISK), font=font, fill=255)
     
     # Display image
