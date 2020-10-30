@@ -66,7 +66,7 @@ font = ImageFont.load_default()
 
 while True:
     # Draw a black filled box to clear the image.
-    draw.rectangle((0,0,width,height), outline=0, fill=0)
+    draw.rectangle((0,0,WIDTH,HEIGHT), outline=0, fill=0)
     
     # Get stats
     # https://unix.stackexchange.com/questions/119126/command-to-display-memory-usage-disk-usage-and-cpu-load
