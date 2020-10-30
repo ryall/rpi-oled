@@ -76,11 +76,14 @@ while True:
     Disk = subprocess.check_output(cmd, shell = True )
     
     # Render stats
-    draw.text((x, top),       "NAME: " + HOSTNAME, font=font, fill=255)
-    draw.text((x, top+12),    "IP  : " + str(IP),  font=font, fill=255)
-    draw.text((x, top+24),    str(CPU) + " | " + str(MemUsage), font=font, fill=255)
-    draw.text((x, top+36),    str(MemUsage),  font=font, fill=255)
-    draw.text((x, top+48),    str(Disk),  font=font, fill=255)
+    x = 0
+    y = 0
+    
+    draw.text((x, y),       "NAME: " + HOSTNAME, font=font, fill=255)
+    draw.text((x, y+12),    "IP  : " + str(IP),  font=font, fill=255)
+    draw.text((x, y+24),    str(CPU) + " | " + str(MemUsage), font=font, fill=255)
+    draw.text((x, y+36),    str(MemUsage),  font=font, fill=255)
+    draw.text((x, y+48),    str(Disk),  font=font, fill=255)
     
     # Display image
     oled.image(image)
