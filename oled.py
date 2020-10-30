@@ -78,8 +78,8 @@ while True:
     draw.text((x, top),       "NAME: " + HOSTNAME, font=font, fill=255)
     draw.text((x, top+12),    "IP  : " + str(IP),  font=font, fill=255)
     draw.text((x, top+24),    str(CPU) + " | " + str(MemUsage), font=font, fill=255)
-    draw.text((x, top+27),    str(MemUsage),  font=font, fill=255)
-    draw.text((x, top+25),    str(Disk),  font=font, fill=255)
+    draw.text((x, top+36),    str(MemUsage),  font=font, fill=255)
+    draw.text((x, top+48),    str(Disk),  font=font, fill=255)
     
     # Display image
     oled.image(image)
