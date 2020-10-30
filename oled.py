@@ -30,6 +30,10 @@ oled = adafruit_ssd1306.SSD1306_I2C(WIDTH, HEIGHT, i2c, addr=0x3C, reset=oled_re
 # oled_dc = digitalio.DigitalInOut(board.D6)
 # oled = adafruit_ssd1306.SSD1306_SPI(WIDTH, HEIGHT, spi, oled_dc, oled_reset, oled_cs)
 
+# Clear display.
+oled.fill(0)
+oled.show()
+    
 # Create blank image for drawing.
 # Make sure to create image with mode '1' for 1-bit color.
 image = Image.new("1", (oled.width, oled.height))
@@ -61,9 +65,8 @@ font = ImageFont.load_default()
 #)
 
 while True:
-    # Clear display.
-    oled.fill(0)
-    oled.show()
+    # Draw a black filled box to clear the image.
+    draw.rectangle((0,0,width,height), outline=0, fill=0)
     
     # Get stats
     # https://unix.stackexchange.com/questions/119126/command-to-display-memory-usage-disk-usage-and-cpu-load
