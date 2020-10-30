@@ -3,6 +3,7 @@ Code based on the official documentation at:
 https://learn.adafruit.com/monochrome-oled-breakouts/overview
 """
 
+import time
 import board
 import digitalio
 from PIL import Image, ImageDraw, ImageFont
