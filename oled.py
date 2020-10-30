@@ -26,10 +26,6 @@ oled = adafruit_ssd1306.SSD1306_I2C(WIDTH, HEIGHT, i2c, addr=0x3C, reset=oled_re
 # oled_dc = digitalio.DigitalInOut(board.D6)
 # oled = adafruit_ssd1306.SSD1306_SPI(WIDTH, HEIGHT, spi, oled_dc, oled_reset, oled_cs)
 
-# Clear display.
-oled.fill(0)
-oled.show()
-
 # Create blank image for drawing.
 # Make sure to create image with mode '1' for 1-bit color.
 image = Image.new("1", (oled.width, oled.height))
@@ -51,15 +47,43 @@ draw = ImageDraw.Draw(image)
 font = ImageFont.load_default()
 
 # Draw Some Text
-text = "Raspberry Pi"
-(font_width, font_height) = font.getsize(text)
-draw.text(
-    (oled.width // 2 - font_width // 2, oled.height // 2 - font_height // 2),
-    text,
-    font=font,
-    fill=255,
-)
+#text = "Raspberry Pi"
+#(font_width, font_height) = font.getsize(text)
+#draw.text(
+#    (oled.width // 2 - font_width // 2, oled.height // 2 - font_height // 2),
+#    text,
+#    font=font,
+#    fill=255,
+#)
 
-# Display image
-oled.image(image)
-oled.show()
+while True:
+    # Clear display.
+    oled.fill(0)
+    oled.show()
+    
+    # Get stats
+    # https://unix.stackexchange.com/questions/119126/command-to-display-memory-usage-disk-usage-and-cpu-load
+    cmd = "hostname"
+    HOSTNAME =  subprocess.check_output(cmd, shell = True)
+    cmd = "hostname -I | cut -d\' \' -f1"
+    IP = subprocess.check_output(cmd, shell = True )
+    cmd = "top -bn1 | grep load | awk '{printf \"CPU: %3d%%\", $(NF-2)*100/4}'"
+    CPU = subprocess.check_output(cmd, shell = True )
+    cmd = "free -m | awk 'NR==2{printf \"MEM: %3d%%\", $3*100/$2 }'"
+    MemUsage = subprocess.check_output(cmd, shell = True )
+    cmd = "df -h | awk '$NF==\"/\"{printf \"Disk: %d/%dGB %s\", $3,$2,$5}'"
+    Disk = subprocess.check_output(cmd, shell = True )
+    
+    # Render stats
+    draw.text((x, top),       "NAME: " + HOSTNAME, font=font, fill=255)
+    draw.text((x, top+12),    "IP  : " + str(IP),  font=font, fill=255)
+    draw.text((x, top+24),    str(CPU) + " | " + str(MemUsage), font=font, fill=255)
+    draw.text((x, top+27),    str(MemUsage),  font=font, fill=255)
+    draw.text((x, top+25),    str(Disk),  font=font, fill=255)
+    
+    # Display image
+    oled.image(image)
+    oled.show()
+    
+    # Wait
+    time.sleep(1)
