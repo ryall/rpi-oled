@@ -73,7 +73,7 @@ while True:
     HOSTNAME = subprocess.check_output("hostname", shell = True) 
     IP = subprocess.check_output("hostname -I | cut -d\' \' -f1", shell = True)
     RAM = "N/A"#subprocess.check_output("free -m | awk 'NR==2{printf \"%s/%sMB (%.2f%%)\n\", $3,$2,$3*100/$2}'", shell = True)
-    DISK = subprocess.check_output("df -h | awk '$NF=="/"{printf \"%d/%dGB (%s)\n\", $3,$2,$5}'", shell = True)
+    DISK = "N/A"#subprocess.check_output("df -h | awk '$NF=="/"{printf \"%d/%dGB (%s)\n\", $3,$2,$5}'", shell = True)
     CPU = subprocess.check_output("top -bn1 | grep load | awk '{printf \"%.2f\n\", $(NF-2)}'", shell = True)
     
     # Render stats
