@@ -32,20 +32,20 @@ oled.show()
 
 # Create blank image for drawing.
 # Make sure to create image with mode '1' for 1-bit color.
-image = Image.new("1", (oled.width, oled.height))
+#image = Image.new("1", (oled.width, oled.height))
 
 # Get drawing object to draw on image.
-draw = ImageDraw.Draw(image)
+#draw = ImageDraw.Draw(image)
 
 # Draw a white background
-draw.rectangle((0, 0, oled.width, oled.height), outline=255, fill=255)
+#draw.rectangle((0, 0, oled.width, oled.height), outline=255, fill=255)
 
 # Draw a smaller inner rectangle
-draw.rectangle(
-    (BORDER, BORDER, oled.width - BORDER - 1, oled.height - BORDER - 1),
-    outline=0,
-    fill=0,
-)
+#draw.rectangle(
+#    (BORDER, BORDER, oled.width - BORDER - 1, oled.height - BORDER - 1),
+#    outline=0,
+#    fill=0,
+#)
 
 # Load default font.
 font = ImageFont.load_default()
