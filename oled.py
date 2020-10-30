@@ -72,16 +72,16 @@ while True:
     # https://unix.stackexchange.com/questions/119126/command-to-display-memory-usage-disk-usage-and-cpu-load
     HOSTNAME = subprocess.check_output("hostname", shell = True) 
     IP = subprocess.check_output("hostname -I | cut -d\' \' -f1", shell = True)
-    MEM = subprocess.check_output("free -m | awk 'NR==2{printf \"RAM: %s/%sMB (%.2f%%)\n\", $3,$2,$3*100/$2 }'", shell = True)
-    DISK = subprocess.check_output("df -h | awk '$NF=="/"{printf \"Disk: %d/%dGB (%s)\n\", $3,$2,$5}'", shell = True)
-    CPU = subprocess.check_output("top -bn1 | grep load | awk '{printf \"CPU Load: %.2f\n\", $(NF-2)}'", shell = True)
+    MEM = subprocess.check_output("free -m | awk 'NR==2{printf \"%s/%sMB (%.2f%%)\n\", $3,$2,$3*100/$2}'", shell = True)
+    DISK = subprocess.check_output("df -h | awk '$NF=="/"{printf \"%d/%dGB (%s)\n\", $3,$2,$5}'", shell = True)
+    CPU = subprocess.check_output("top -bn1 | grep load | awk '{printf \"%.2f\n\", $(NF-2)}'", shell = True)
     
     # Render stats
     draw.text((X, Y), "Host: " + str(HOSTNAME), font=font, fill=255)
     draw.text((X, Y+12), "IP: " + str(IP), font=font, fill=255)
-    draw.text((X, Y+24), str(CPU), font=font, fill=255)
-    draw.text((X, Y+36), str(MEM), font=font, fill=255)
-    draw.text((X, Y+48), str(DISK), font=font, fill=255)
+    draw.text((X, Y+24), "CPU: " + str(CPU), font=font, fill=255)
+    draw.text((X, Y+36), "RAM: " + str(MEM), font=font, fill=255)
+    draw.text((X, Y+48), "Disk: " + str(DISK), font=font, fill=255)
     
     # Display image
     oled.image(image)
