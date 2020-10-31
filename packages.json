@@ -1,0 +1,12 @@
+{
+  "name": "rpi-oled",
+  "version": "1.0.0",
+  "main": "stats.js",
+  "license": "MIT",
+  "dependencies": {
+    "johnny-five": "^2.0.0",
+    "oled-js": "^5.1.2",
+    "raspi-io": "^11.0.0",
+    "temporal": "^0.7.1"
+  }
+}
