@@ -10,9 +10,11 @@ Script to display RPi stats on an I2C 128x64 OLED display.
 
 ## Installation
 
-- Install system dependencies: `sudo apt install -y python3 python3-pip python3-pil`
-- Install Python dependencies: `pip3 install adafruit-circuitpython-ssd1306`
+- Install system dependencies: `sudo apt install -y git nodejs npm pigpio`
+- Clone the repository: `git clone https://github.com/ryall/rpi-oled.git`
+- Go to the new directory: `cd rpi-oled`
+- Install Node dependencies: `npm install`
 
 ## Running
 
-- Run with `python3 oled.py`
+- Run with `node oled.js`
