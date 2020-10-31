@@ -8,6 +8,10 @@ const board = new five.Board({
   io: new RaspiIO(),
 });
 
+const ORIGIN_X = 0;
+const ORIGIN_Y = 0;
+const LINE_HEIGHT = 8
+
 board.on('ready', () => {
   // Initialise the display
   const opts = {
@@ -26,6 +30,10 @@ board.on('ready', () => {
   temporal.loop(1000, function() {
     oled.clearDisplay();
     
+    oled.setCursor(ORIGIN_X, ORIGIN_Y);
     oled.writeString(font, 1, "Hello World", 1, false, 0);
+    
+    oled.setCursor(ORIGIN_X, ORIGIN_Y + LINE_HEIGHT);
+    oled.writeString(font, 1, "RAM: ", 1, false, 0);
   });
 });
