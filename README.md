@@ -17,4 +17,4 @@ Script to display RPi stats on an I2C 128x64 OLED display.
 
 ## Running
 
-- Run with `node oled.js`
+- Run with `node stats.js`
