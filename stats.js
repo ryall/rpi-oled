@@ -27,30 +27,35 @@ board.on('ready', () => {
   // Clear the screen
   oled.clearDisplay();
   oled.update();
-  
+
   // Display stats
   let networkInterfaceIndex = 0;
-  
+
   temporal.loop(1000, function() {
     // Fetch current stats
     const hostname = os.hostname();
     const networkInterfaces = os.networkInterfaces();
-    
+
     // Process the network interface
     const currentNetworkInterface = NETWORK_INTERFACES[networkInterfaceIndex];
-    
-    networkInterfaceIndex = networkInterfaceIndex++ % NETWORK_INTERFACES.length;
-    
+
+    //networkInterfaceIndex %= NETWORK_INTERFACES.length;
+
     // Refresh the display
     oled.clearDisplay();
-    
+
     oled.setCursor(ORIGIN_X, ORIGIN_Y);
     oled.writeString(font, 1, hostname, 1, false, 0);
-    
+
     oled.setCursor(ORIGIN_X, ORIGIN_Y + LINE_HEIGHT);
-    oled.writeString(font, 1, currentNetworkInterface + ': ' + networkInterfaces[currentNetworkInterface].address || 'Unavailable', 1, false, 0);
-    
+    oled.writeString(font, 1, currentNetworkInterface + ': ' + networkInterfaces[currentNetworkInterface][0].address || 'Unavailable', 1, false, 0);
+
     oled.setCursor(ORIGIN_X, ORIGIN_Y + (LINE_HEIGHT * 2));
     oled.writeString(font, 1, "RAM: ", 1, false, 0);
+  });
+
+  // Switch views
+  temporal.loop(5000, function() {
+    networkInterfaceIndex %= ++networkInterfaceIndex;
   });
 });
