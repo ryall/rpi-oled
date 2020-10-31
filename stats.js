@@ -51,6 +51,6 @@ board.on('ready', () => {
     oled.writeString(font, 1, currentNetworkInterface + ': ' + networkInterfaces[currentNetworkInterface].address || 'Unavailable', 1, false, 0);
     
     oled.setCursor(ORIGIN_X, ORIGIN_Y + (LINE_HEIGHT * 2));
-    oled.writeString(font, 1, "RAM: " + , 1, false, 0);
+    oled.writeString(font, 1, "RAM: ", 1, false, 0);
   });
 });
