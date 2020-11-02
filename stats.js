@@ -78,7 +78,7 @@ board.on('ready', () => {
   const cpuTimer = timer(0, 500);
 
   cpuTimer.subscribe(async () => {
-    const { avgload, current, cpus } = await si.currentLoad();
+    const { avgload, currentload, cpus } = await si.currentLoad();
     
     stats.cpu = `CPU: ${currentload} ~${avgload}% (${cpus.length})`;
   });
