@@ -38,18 +38,18 @@ board.on('ready', () => {
   oled.update();
 
   // Hostname processing
-  const hostnameTimer = timer(0, 60000);
+  const hostname$ = timer(0, 60000);
 
-  hostnameTimer.subscribe(async () => {
+  hostname$.subscribe(async () => {
     const { hostname } = await si.osInfo();
 
     renderStat(oled, 'host', hostname);
   });
 
   // Network interface processing
-  const netTimer = timer(0, 5000);
+  const net$ = timer(0, 5000);
 
-  netTimer.subscribe((index) => {
+  net$.subscribe(async (index) => {
     //const interfaces = os.networkInterfaces();
     const interfaces = await si.networkInterfaces();
     const interfaceName = _.keys(NETWORK_INTERFACES)[index % _.keys(NETWORK_INTERFACES).length];
@@ -83,9 +83,9 @@ board.on('ready', () => {
   });
 
   // RAM processing
-  const memTimer = timer(0, 500);
+  const mem$ = timer(0, 500);
 
-  memTimer.subscribe(async () => {
+  mem$.subscribe(async () => {
     const { total, free, used } = await si.mem();
     const percent = _.round((used / total) * 100);
 
@@ -93,9 +93,9 @@ board.on('ready', () => {
   });
 
   // Disk processing
-  const diskTimer = timer(0, 10000);
+  const disk$ = timer(0, 10000);
 
-  diskTimer.subscribe(async () => {
+  disk$.subscribe(async () => {
     const disks = await si.fsSize();
     const disk = disks[0];
 
@@ -103,9 +103,9 @@ board.on('ready', () => {
   });
 
   // Uptime processing
-  const uptimeTimer = timer(0, 1000);
+  const uptime$ = timer(0, 1000);
 
-  uptimeTimer.subscribe(async () => {
+  uptime$.subscribe(async () => {
     const { uptime } = await si.time();
 
     renderStat(oled, 'uptime', `UPT ${prettyMS(uptime * 1000)}`);
