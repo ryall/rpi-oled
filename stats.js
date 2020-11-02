@@ -107,11 +107,11 @@ board.on('ready', () => {
   uptimeTimer.subscribe(async () => {
     const { uptime } = await si.time();
 
-    stats.uptime = `UPT ${prettyMS(uptime)}`;
+    renderStat('uptime', `UPT ${prettyMS(uptime)}`);
   });
   
   // Render update
-  const renderTimer = timer(500, 1000);
+  /*const renderTimer = timer(500, 1000);
 
   renderTimer.subscribe(() => {
     oled.clearDisplay();
@@ -122,8 +122,16 @@ board.on('ready', () => {
       oled.setCursor(ORIGIN_X, ORIGIN_Y + (LINE_HEIGHT * index++));
       oled.writeString(font, 1, text, 1, false, 0);
     });
-  });
+  });*/
 });
+
+function renderStat(key, text) {
+  const index = _.indexOf(_.keys(stats), key);
+  
+  oled.drawRect(ORIGIN_X, ORIGIN_Y + (LINE_HEIGHT * index), WIDTH, LINE_HEIGHT, 0);
+  oled.setCursor(ORIGIN_X, ORIGIN_Y + (LINE_HEIGHT * index));
+  oled.writeString(font, 1, text, 1, false, 0);
+}
 
 function formatFilesize(size) { 
   return _.replace(filesize(size, { round: 0 }), ' ', ''); 
