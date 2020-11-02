@@ -15,7 +15,7 @@ const board = new five.Board({
 
 const ORIGIN_X = 0;
 const ORIGIN_Y = 0;
-const LINE_HEIGHT = 10;
+const LINE_HEIGHT = 14;
 const NETWORK_INTERFACES = { 'eth0': 'E', 'wlan0': 'W' };
 
 board.on('ready', () => {
@@ -58,7 +58,7 @@ board.on('ready', () => {
     const interfaceShortName = NETWORK_INTERFACES[interfaceName];
     const interface = interfaces[interfaceName];
 
-    stats.net = interfaceShortName + ': ' + (interface[0].address || 'Unavailable');
+    stats.net = `${interfaceShortName}: ${interface[0].address || 'Unavailable'}`;
   });
   
   // RAM processing
@@ -68,7 +68,7 @@ board.on('ready', () => {
     const { total, free, used } = await si.mem();
     const percent = Math.round((used / total) * 100);
 
-    stats.ram = 'RAM: ' + formatFilesize(used) + '/' + formatFilesize(total) + '(' + percent + '%)';
+    stats.ram = `MEM: ${formatFilesize(used)}/${formatFilesize(total)} ${percent}%`;
   });
 
   // CPU processing
@@ -77,14 +77,14 @@ board.on('ready', () => {
   cpuTimer.subscribe(async () => {
     const { avg, cores } = await si.cpuCurrentspeed();
     
-    stats.cpu = 'CPU: ' + avg;
+    stats.cpu = `CPU: ${avg}`;
   });
 
   // Disk processing
   const diskTimer = timer(0, 10000);
 
   diskTimer.subscribe(() => {
-    stats.disk = 'Disk: ';
+    stats.disk = `Disk: `;
   });
 
   // Uptime processing
@@ -93,7 +93,7 @@ board.on('ready', () => {
   uptimeTimer.subscribe(() => {
     const uptime = os.uptime();
 
-    stats.uptime = 'Up: ' + prettyMS(uptime);
+    stats.uptime = `Up: ${prettyMS(uptime)}`;
   });
   
   // Render update
