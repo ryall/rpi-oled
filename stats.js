@@ -22,15 +22,15 @@ const ORIGIN_Y = 0;
 const LINE_HEIGHT = 11;
 const NETWORK_INTERFACES = { 'eth0': 'ETH', 'wlan0': 'WFI' }; // { 'device': 'display name' }
 
-// The stat lines
-const stats = {
-  host: '',
-  net: '',
-  cpu: '',
-  ram: '',
-  disk: '',
-  uptime: '',
-};
+// The stat line ordering
+const stats = [
+  'host',
+  'net',
+  'cpu',
+  'mem',
+  'disk',
+  'uptime',
+];
 
 board.on('ready', () => {
   // Initialise the display
@@ -50,7 +50,7 @@ board.on('ready', () => {
   const hostnameTimer = timer(0, 60000);
 
   hostnameTimer.subscribe(() => {
-    stats.host = os.hostname();
+    renderStat(oled, 'host', os.hostname());
   });
 
   // Network interface processing
@@ -62,7 +62,7 @@ board.on('ready', () => {
     const interfaceShortName = NETWORK_INTERFACES[interfaceName];
     const interface = interfaces[interfaceName];
 
-    stats.net = `${interfaceShortName} ${interface[0].address || 'Unavailable'}`;
+    renderStat(oled, 'net', `${interfaceShortName} ${interface[0].address || 'Unavailable'}`;
   });
 
   // CPU processing
@@ -74,10 +74,10 @@ board.on('ready', () => {
     
     switch (index % 2) {
       case 0: 
-        stats.cpu = `CPU ${_.round(currentload)}% ${_.round(avgload)}% (${cores})`;
+        renderStat(oled, 'cpu', `CPU ${_.round(currentload)}% ${_.round(avgload)}% (${cores})`);
         break;
       case 1:
-        stats.cpu = `CPU ${brand} ${speed}GHz`;
+        renderStat(oled, 'cpu', `CPU ${brand} ${speed}GHz`);
         break;
     }
   });
@@ -89,7 +89,7 @@ board.on('ready', () => {
     const { total, free, used } = await si.mem();
     const percent = _.round((used / total) * 100);
 
-    stats.ram = `MEM ${formatFilesize(used)}/${formatFilesize(total)} ${percent}%`;
+    renderStat(oled, 'mem', `MEM ${formatFilesize(used)}/${formatFilesize(total)} ${percent}%`);
   });
 
   // Disk processing
@@ -99,7 +99,7 @@ board.on('ready', () => {
     const disks = await si.fsSize();
     const disk = disks[0];
     
-    stats.disk = `DSK ${formatFilesize(disk.used)}/${formatFilesize(disk.size)} ${_.round(disk.use)}%`;
+    renderStat(oled, 'disk', `DSK: ${formatFilesize(disk.used)}/${formatFilesize(disk.size)} ${_.round(disk.use)}%`);
   });
 
   // Uptime processing
