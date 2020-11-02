@@ -4,10 +4,10 @@ const { timer } = require('rxjs');
 const five = require('johnny-five');
 const { RaspiIO } = require('raspi-io');
 const Oled = require('oled-js');
-const font = require('oled-font-3x5');
 const filesize = require('filesize');
 const prettyMS = require('pretty-ms');
 const si = require('systeminformation');
+const font = require('./fonts/tahoma-10-bold.font.js');
 
 const board = new five.Board({
   io: new RaspiIO(),
