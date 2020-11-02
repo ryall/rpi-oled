@@ -71,8 +71,9 @@ board.on('ready', () => {
       take(100),
       concatMap(async () => {
         const { avgload, currentload, cpus } = await si.currentLoad();
+        const { main: maintemp } = await si.cpuTemperature();
 
-        return `CPU ${_.round(currentload)}% (${_.round(avgload)}% Av)`;
+        return `CPU ${_.round(currentload)}% (maintemp*C)`;
       }),
     )/*,
   )*/
