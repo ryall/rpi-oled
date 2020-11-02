@@ -79,7 +79,7 @@ board.on('ready', () => {
   
   //const cpuRunner = concat(cpuInfo$, cpuCurrentLoad$);
   
-  cpuAction.subscribe((text) => {
+  cpuInfo$.subscribe((text) => {
     renderStat(oled, 'cpu', text);
   });
   
