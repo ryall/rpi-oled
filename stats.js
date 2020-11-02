@@ -60,12 +60,11 @@ board.on('ready', () => {
 
   // CPU processing
   const cpuInfo$ = timer().pipe(
-    mapTo('CPU Loading!')
-    /*map(async () => {
+    map(async () => {
       const { speed, cores, physicalCores } = await si.cpu();
 
       return of(`CPU ${speed}GHz (${physicalCores}/${cores} cores)`);
-    }),*/
+    }),
   );
   
   const cpuCurrentLoad$ = timer(1000, 500).pipe(
