@@ -1,13 +1,12 @@
 const _ = require('lodash');
-const os = require('os');
 const { timer } = require('rxjs');
 const five = require('johnny-five');
 const { RaspiIO } = require('raspi-io');
 const Oled = require('oled-js');
+const font = require('oled-font-5x7');
 const filesize = require('filesize');
 const prettyMS = require('pretty-ms');
 const si = require('systeminformation');
-const font = require('oled-font-5x7');
 
 const board = new five.Board({
   io: new RaspiIO(),
@@ -60,15 +59,15 @@ board.on('ready', () => {
   const cpuTimer = timer(0, 500);
 
   cpuTimer.subscribe(async (index) => {
-    const { brand, speed, cores } = await si.cpu();
+    const { speed, cores, physicalCores } = await si.cpu();
     const { avgload, currentload, cpus } = await si.currentLoad();
     
     switch (index % 2) {
       case 0: 
-        renderStat(oled, 'cpu', `CPU ${_.round(currentload)}% ${_.round(avgload)}% (${cores})`);
+        renderStat(oled, 'cpu', `CPU ${_.round(currentload)}% AVG ${_.round(avgload)}%`);
         break;
       case 1:
-        renderStat(oled, 'cpu', `CPU ${brand} ${speed}GHz`);
+        renderStat(oled, 'cpu', `CPU ${speed}GHz (${physicalCores}/${cores})`);
         break;
     }
   });
@@ -120,10 +119,10 @@ board.on('ready', () => {
 function renderStat(oled, key, text) {
   const index = _.indexOf(_.keys(STATS), key);
   
-  oled.drawRect(ORIGIN_X, ORIGIN_Y + (LINE_HEIGHT * index), WIDTH, LINE_HEIGHT, 0);
+  //oled.drawRect(ORIGIN_X, ORIGIN_Y + (LINE_HEIGHT * index), WIDTH, LINE_HEIGHT, 0);
   oled.setCursor(ORIGIN_X, ORIGIN_Y + (LINE_HEIGHT * index));
   oled.writeString(font, 1, text, 1, false, 0);
-  oled.update();
+  //oled.update();
 }
 
 function formatFilesize(size) { 
