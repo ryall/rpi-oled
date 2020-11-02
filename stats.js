@@ -33,12 +33,12 @@ board.on('ready', () => {
 
   // The stat lines
   const stats = {
-    host: '...',
-    net: '...',
-    ram: '...',
-    cpu: '...',
-    disk: '...',
-    uptime: '...',
+    host: '',
+    net: '',
+    cpu: '',
+    ram: '',
+    disk: '',
+    uptime: '',
   };
 
   // Clear the screen
@@ -63,16 +63,6 @@ board.on('ready', () => {
 
     stats.net = `${interfaceShortName} ${interface[0].address || 'Unavailable'}`;
   });
-  
-  // RAM processing
-  const ramTimer = timer(0, 500);
-
-  ramTimer.subscribe(async () => {
-    const { total, free, used } = await si.mem();
-    const percent = Math.round((used / total) * 100);
-
-    stats.ram = `MEM ${formatFilesize(used)}/${formatFilesize(total)} ${percent}%`;
-  });
 
   // CPU processing
   const cpuTimer = timer(0, 500);
@@ -90,12 +80,25 @@ board.on('ready', () => {
         break;
     }
   });
+  
+  // RAM processing
+  const memTimer = timer(0, 500);
+
+  memTimer.subscribe(async () => {
+    const { total, free, used } = await si.mem();
+    const percent = _.round((used / total) * 100);
+
+    stats.ram = `MEM ${formatFilesize(used)}/${formatFilesize(total)} ${percent}%`;
+  });
 
   // Disk processing
   const diskTimer = timer(0, 10000);
 
   diskTimer.subscribe(() => {
-    stats.disk = `DSK `;
+    const disks = await si.fsSize();
+    const disk = disks[0];
+    
+    stats.disk = `DSK ${formatFilesize(disk.used)}/${formatFilesize(disk.size)} ${_.round(disk.use)}%`;
   });
 
   // Uptime processing
