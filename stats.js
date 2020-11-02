@@ -1,9 +1,13 @@
-var os = require("os");
-const temporal = require('temporal');
+const _ = require('lodash');
+const os = require('os');
+const { timer } = require('rxjs');
 const five = require('johnny-five');
 const { RaspiIO } = require('raspi-io');
 const Oled = require('oled-js');
 const font = require('oled-font-5x7');
+const filesize = require('filesize');
+const prettyMS = require('pretty-ms');
+const si = require('systeminformation');
 
 const board = new five.Board({
   io: new RaspiIO(),
@@ -11,8 +15,8 @@ const board = new five.Board({
 
 const ORIGIN_X = 0;
 const ORIGIN_Y = 0;
-const LINE_HEIGHT = 12;
-const NETWORK_INTERFACES = ['eth0', 'wlan0'];
+const LINE_HEIGHT = 10;
+const NETWORK_INTERFACES = { 'eth0': 'E', 'wlan0': 'W' };
 
 board.on('ready', () => {
   // Initialise the display
@@ -24,38 +28,87 @@ board.on('ready', () => {
 
   const oled = new Oled(board, five, opts);
 
+  // The stat lines
+  const stats = {
+    host: '...',
+    net: '...',
+    ram: '...',
+    cpu: '...',
+    disk: '...',
+    uptime: '...',
+  };
+
   // Clear the screen
   oled.clearDisplay();
   oled.update();
 
-  // Display stats
-  let networkInterfaceIndex = 0;
+  // Hostname processing
+  const hostnameTimer = timer(0, 60000);
 
-  temporal.loop(1000, function() {
-    // Fetch current stats
-    const hostname = os.hostname();
-    const networkInterfaces = os.networkInterfaces();
-
-    // Process the network interface
-    const currentNetworkInterface = NETWORK_INTERFACES[networkInterfaceIndex];
-
-    //networkInterfaceIndex %= NETWORK_INTERFACES.length;
-
-    // Refresh the display
-    oled.clearDisplay();
-
-    oled.setCursor(ORIGIN_X, ORIGIN_Y);
-    oled.writeString(font, 1, hostname, 1, false, 0);
-
-    oled.setCursor(ORIGIN_X, ORIGIN_Y + LINE_HEIGHT);
-    oled.writeString(font, 1, currentNetworkInterface + ': ' + networkInterfaces[currentNetworkInterface][0].address || 'Unavailable', 1, false, 0);
-
-    oled.setCursor(ORIGIN_X, ORIGIN_Y + (LINE_HEIGHT * 2));
-    oled.writeString(font, 1, "RAM: ", 1, false, 0);
+  hostnameTimer.subscribe(() => {
+    stats.host = os.hostname();
   });
 
-  // Switch views
-  temporal.loop(5000, function() {
-    networkInterfaceIndex %= ++networkInterfaceIndex;
+  // Network interface processing
+  const netTimer = timer(0, 5000);
+
+  netTimer.subscribe((index) => {
+    const interfaces = os.networkInterfaces();
+    const interfaceName = _.keys(NETWORK_INTERFACES)[index % _.keys(NETWORK_INTERFACES).length];
+    const interfaceShortName = NETWORK_INTERFACES[interfaceName];
+    const interface = interfaces[interfaceName];
+
+    stats.net = interfaceShortName + ': ' + (interface[0].address || 'Unavailable');
+  });
+  
+  // RAM processing
+  const ramTimer = timer(0, 500);
+
+  ramTimer.subscribe(() => {
+    const free = os.freemem();
+    const total = os.totalmem();
+    const used = total - free;
+    const percent = Math.round((used / total) * 100);
+
+    stats.ram = 'RAM: ' + filesize(used, { round: 0 }) + '/' + filesize(total, { round: 0 }) + '(' + percent + '%)';
+  });
+
+  // CPU processing
+  const cpuTimer = timer(0, 500);
+
+  cpuTimer.subscribe(async () => {
+    const { avg, cores } = await si.cpuCurrentspeed();
+    
+    stats.cpu = 'CPU: ' + avg;
+  });
+
+  // Disk processing
+  const diskTimer = timer(0, 10000);
+
+  diskTimer.subscribe(() => {
+    stats.disk = 'Disk: ';
+  });
+
+  // Uptime processing
+  const uptimeTimer = timer(0, 1000);
+
+  uptimeTimer.subscribe(() => {
+    const uptime = os.uptime();
+
+    stats.uptime = 'Up: ' + prettyMS(uptime);
+  });
+  
+  // Render update
+  const renderTimer = timer(500, 1000);
+
+  renderTimer.subscribe(() => {
+    oled.clearDisplay();
+
+    let index = 0;
+
+    _.forEach(stats, (text, stat) => {
+      oled.setCursor(ORIGIN_X, ORIGIN_Y + (LINE_HEIGHT * index++));
+      oled.writeString(font, 1, text, 1, false, 0);
+    });
   });
 });
