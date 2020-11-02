@@ -13,6 +13,7 @@ const board = new five.Board({
   io: new RaspiIO(),
 });
 
+// Configurable options
 const WIDTH = 128;
 const HEIGHT = 64;
 const ADDRESS = 0x3C;
@@ -20,6 +21,16 @@ const ORIGIN_X = 0;
 const ORIGIN_Y = 0;
 const LINE_HEIGHT = 11;
 const NETWORK_INTERFACES = { 'eth0': 'ETH', 'wlan0': 'WFI' }; // { 'device': 'display name' }
+
+// The stat lines
+const stats = {
+  host: '',
+  net: '',
+  cpu: '',
+  ram: '',
+  disk: '',
+  uptime: '',
+};
 
 board.on('ready', () => {
   // Initialise the display
@@ -30,16 +41,6 @@ board.on('ready', () => {
   };
 
   const oled = new Oled(board, five, opts);
-
-  // The stat lines
-  const stats = {
-    host: '',
-    net: '',
-    cpu: '',
-    ram: '',
-    disk: '',
-    uptime: '',
-  };
 
   // Clear the screen
   oled.clearDisplay();
