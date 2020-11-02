@@ -104,8 +104,8 @@ board.on('ready', () => {
   // Uptime processing
   const uptimeTimer = timer(0, 1000);
 
-  uptimeTimer.subscribe(() => {
-    const uptime = os.uptime();
+  uptimeTimer.subscribe(async () => {
+    const { uptime } = await si.time();
 
     stats.uptime = `UPT ${prettyMS(uptime)}`;
   });
