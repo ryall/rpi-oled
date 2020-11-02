@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const { timer, concat } = require('rxjs');
-const { take } = require('rxjs/operators');
+const { take, map } = require('rxjs/operators');
 const five = require('johnny-five');
 const { RaspiIO } = require('raspi-io');
 const Oled = require('oled-js');
@@ -59,21 +59,22 @@ board.on('ready', () => {
   });*/
 
   // CPU processing
-  const cpuInfoTimer = timer(1000);
-  const cpuLoadTimer = timer(0, 500).pipe(take(5));
-  const cpuRunner = concat(cpuInfoTimer, cpuLoadTimer);
-  
-  cpuInfoTimer.subscribe(async (index) => {
-    const { speed, cores, physicalCores } = await si.cpu();
-        
-    return `CPU ${speed}GHz (${physicalCores}/${cores} cores)`;
-  });
+  const cpuInfoAction = timer(1000).pipe(
+    map(async (index) => {
+      const { speed, cores, physicalCores } = await si.cpu();
 
-  cpuLoadTimer.subscribe(async (index) => {
-    const { avgload, currentload, cpus } = await si.currentLoad();
+      return `CPU ${speed}GHz (${physicalCores}/${cores} cores)`;
+    }),
+  );
+  const cpuCurrentLoadAction = timer(0, 500).pipe(
+    take(5), 
+    map(async (index) => {
+      const { avgload, currentload, cpus } = await si.currentLoad();
 
-    return `CPU ${_.round(currentload)}% AVG ${_.round(avgload)}%`;
-  });
+      return `CPU ${_.round(currentload)}% Load ${_.round(avgload)}% Avg.`;
+    }),
+  );
+  const cpuRunner = concat(cpuInfoAction, cpuCurrentLoadAction);
   
   cpuRunner.subscribe((text) => {
     renderStat(oled, 'cpu', text);
