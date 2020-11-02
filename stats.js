@@ -73,7 +73,7 @@ board.on('ready', () => {
         const { avgload, currentload, cpus } = await si.currentLoad();
         const { main: maintemp } = await si.cpuTemperature();
 
-        return `CPU ${_.round(currentload)}% (maintemp*C)`;
+        return `CPU ${_.round(currentload)}% (${maintemp}*C)`;
       }),
     )/*,
   )*/
