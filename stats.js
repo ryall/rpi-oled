@@ -13,17 +13,20 @@ const board = new five.Board({
   io: new RaspiIO(),
 });
 
+const WIDTH = 128;
+const HEIGHT = 64;
+const ADDRESS = 0x3C;
 const ORIGIN_X = 0;
 const ORIGIN_Y = 0;
-const LINE_HEIGHT = 14;
+const LINE_HEIGHT = 12;
 const NETWORK_INTERFACES = { 'eth0': 'E', 'wlan0': 'W' };
 
 board.on('ready', () => {
   // Initialise the display
   const opts = {
-    width: 128,
-    height: 64,
-    address: 0x3C,
+    width: WIDTH,
+    height: HEIGHT,
+    address: ADDRESS,
   };
 
   const oled = new Oled(board, five, opts);
@@ -75,9 +78,9 @@ board.on('ready', () => {
   const cpuTimer = timer(0, 500);
 
   cpuTimer.subscribe(async () => {
-    const { avg, cores } = await si.cpuCurrentspeed();
+    const { avgload, current, cpus } = await si.currentLoad();
     
-    stats.cpu = `CPU: ${avg}`;
+    stats.cpu = `CPU: ${currentload} ~${avgload}% (${cpus.length})`;
   });
 
   // Disk processing
