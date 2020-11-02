@@ -78,9 +78,9 @@ board.on('ready', () => {
     }),*/
   );
   
-  concat(cpuInfo$, cpuCurrentLoad$).subscribe((text) => {
-    renderStat(oled, 'cpu', text);
-  });
+  concat(cpuInfo$, cpuCurrentLoad$).subscribe({
+    next(text) => renderStat(oled, 'cpu', text),
+  );
   
   // RAM processing
   const memTimer = timer(0, 500);
