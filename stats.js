@@ -59,7 +59,7 @@ board.on('ready', () => {
   });*/
 
   // CPU processing
-  const cpuInfo$ = empty().pipe(
+  const cpuInfo$ = timer().pipe(
     mapTo('CPU Loading!')
     /*map(async () => {
       const { speed, cores, physicalCores } = await si.cpu();
@@ -77,9 +77,7 @@ board.on('ready', () => {
     }),
   );
   
-  //const cpuRunner = concat(cpuInfo$, cpuCurrentLoad$);
-  
-  cpuInfo$.subscribe((text) => {
+  concat(cpuInfo$, cpuCurrentLoad$).subscribe((text) => {
     renderStat(oled, 'cpu', text);
   });
   
