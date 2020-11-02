@@ -48,14 +48,14 @@ board.on('ready', () => {
   // Network interface processing
   const netTimer = timer(0, 5000);
 
-  netTimer.subscribe((index) => {
+  /*netTimer.subscribe((index) => {
     const interfaces = os.networkInterfaces();
     const interfaceName = _.keys(NETWORK_INTERFACES)[index % _.keys(NETWORK_INTERFACES).length];
     const interfaceShortName = NETWORK_INTERFACES[interfaceName];
     const interface = interfaces[interfaceName];
 
     renderStat(oled, 'net', `${interfaceShortName} ${interface[0].address || 'Unavailable'}`);
-  });
+  });*/
 
   // CPU processing
   const cpuTimer = timer(0, 500);
