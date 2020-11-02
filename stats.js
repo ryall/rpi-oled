@@ -108,7 +108,7 @@ board.on('ready', () => {
   uptimeTimer.subscribe(async () => {
     const { uptime } = await si.time();
 
-    renderStat('uptime', `UPT ${prettyMS(uptime)}`);
+    renderStat(oled, 'uptime', `UPT ${prettyMS(uptime)}`);
   });
   
   // Render update
@@ -126,7 +126,7 @@ board.on('ready', () => {
   });*/
 });
 
-function renderStat(key, text) {
+function renderStat(oled, key, text) {
   const index = _.indexOf(_.keys(stats), key);
   
   oled.drawRect(ORIGIN_X, ORIGIN_Y + (LINE_HEIGHT * index), WIDTH, LINE_HEIGHT, 0);
