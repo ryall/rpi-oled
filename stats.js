@@ -55,9 +55,7 @@ board.on('ready', () => {
     const interfaceShortName = NETWORK_INTERFACES[interfaceName];
     const interface = _.filter(interfaces, (interface) => interface.iface === interfaceName);
     
-    console.log(interfaceName, interface);
-
-    renderStat(oled, 'net', `${interfaceShortName} ${interface.ip4 || 'Unavailable'}`);
+    renderStat(oled, 'net', `${interfaceShortName} ${interface[0].ip4 || 'Unavailable'}`);
   });
 
   // CPU processing
