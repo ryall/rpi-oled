@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const { timer } = require('rxjs');
+const { timer, take, concat } = require('rxjs');
 const five = require('johnny-five');
 const { RaspiIO } = require('raspi-io');
 const Oled = require('oled-js');
@@ -58,20 +58,24 @@ board.on('ready', () => {
   });*/
 
   // CPU processing
-  const cpuTimer = timer(0, 500);
-
-  cpuTimer.subscribe(async (index) => {
+  const cpuInfoTimer = timer(1000);
+  const cpuLoadTimer = timer(0, 500).pipe(take(5));
+  const cpuRunner = concat(cpuInfoTimer, cpuLoadTimer);
+  
+  cpuInfoTimer.subscribe(async (index) => {
     const { speed, cores, physicalCores } = await si.cpu();
+        
+    return `CPU ${speed}GHz (${physicalCores}/${cores} cores)`;
+  });
+
+  cpuLoadTimer.subscribe(async (index) => {
     const { avgload, currentload, cpus } = await si.currentLoad();
-    
-    switch (index % 2) {
-      case 0: 
-        renderStat(oled, 'cpu', `CPU ${_.round(currentload)}% AVG ${_.round(avgload)}%`);
-        break;
-      case 1:
-        renderStat(oled, 'cpu', `CPU ${speed}GHz (${physicalCores}/${cores})`);
-        break;
-    }
+
+    return `CPU ${_.round(currentload)}% AVG ${_.round(avgload)}%`;
+  });
+  
+  cpuRunner.subscribe((text) => {
+    renderStat(oled, 'cpu', text);
   });
   
   // RAM processing
@@ -91,7 +95,7 @@ board.on('ready', () => {
     const disks = await si.fsSize();
     const disk = disks[0];
     
-    renderStat(oled, 'disk', `DSK: ${formatFilesize(disk.used)}/${formatFilesize(disk.size)} ${_.round(disk.use)}%`);
+    renderStat(oled, 'disk', `DSK ${formatFilesize(disk.used)}/${formatFilesize(disk.size)} ${_.round(disk.use)}%`);
   });
 
   // Uptime processing
@@ -121,10 +125,9 @@ board.on('ready', () => {
 function renderStat(oled, key, text) {
   const index = _.indexOf(STATS, key);
   
-  //oled.drawRect(ORIGIN_X, ORIGIN_Y + (LINE_HEIGHT * index), WIDTH, LINE_HEIGHT, 0);
+  oled.drawRect(ORIGIN_X, ORIGIN_Y + (LINE_HEIGHT * index), WIDTH, LINE_HEIGHT, 0);
   oled.setCursor(ORIGIN_X, ORIGIN_Y + (LINE_HEIGHT * index));
   oled.writeString(font, 1, text, 1, false, 0);
-  //oled.update();
 }
 
 function formatFilesize(size) { 
