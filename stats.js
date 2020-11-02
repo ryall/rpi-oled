@@ -70,11 +70,12 @@ board.on('ready', () => {
   
   const cpuCurrentLoad$ = timer(1000, 500).pipe(
     take(5), 
-    map(async () => {
+    mapTo('CPU Loaded!')
+    /*map(async () => {
       const { avgload, currentload, cpus } = await si.currentLoad();
 
       return of(`CPU ${_.round(currentload)}% Load ${_.round(avgload)}% Avg.`);
-    }),
+    }),*/
   );
   
   concat(cpuInfo$, cpuCurrentLoad$).subscribe((text) => {
