@@ -50,11 +50,12 @@ board.on('ready', () => {
   const net$ = timer(0, 5000);
 
   net$.subscribe(async (index) => {
-    //const interfaces = os.networkInterfaces();
     const interfaces = await si.networkInterfaces();
     const interfaceName = _.keys(NETWORK_INTERFACES)[index % _.keys(NETWORK_INTERFACES).length];
     const interfaceShortName = NETWORK_INTERFACES[interfaceName];
-    const interface = _.filter(interfaces, (interface) => interface.ifaceName === interfaceName);
+    const interface = _.filter(interfaces, (interface) => interface.iface === interfaceName);
+    
+    console.log(interfaces, interface);
 
     renderStat(oled, 'net', `${interfaceShortName} ${interface.ip4 || 'Unavailable'}`);
   });
