@@ -59,7 +59,7 @@ board.on('ready', () => {
   });*/
 
   // CPU processing
-  const cpuAction = empty().pipe(
+  const cpuAction = timer().pipe(
     concatMap(async () => {
       const { speed, cores, physicalCores } = await si.cpu();
 
