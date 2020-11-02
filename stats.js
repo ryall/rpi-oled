@@ -1,6 +1,6 @@
 const _ = require('lodash');
-const { of, timer, concat, empty } = require('rxjs');
-const { take, map, mapTo, concatMap } = require('rxjs/operators');
+const { of, from, timer, concat, empty } = require('rxjs');
+const { take, map, mapTo, concatMap, repeat } = require('rxjs/operators');
 const five = require('johnny-five');
 const { RaspiIO } = require('raspi-io');
 const Oled = require('oled-js');
@@ -42,45 +42,46 @@ board.on('ready', () => {
 
   hostnameTimer.subscribe(async () => {
     const { hostname } = await si.osInfo();
-    
+
     renderStat(oled, 'host', hostname);
   });
 
   // Network interface processing
   const netTimer = timer(0, 5000);
 
-  /*netTimer.subscribe((index) => {
+  netTimer.subscribe((index) => {
     const interfaces = os.networkInterfaces();
     const interfaceName = _.keys(NETWORK_INTERFACES)[index % _.keys(NETWORK_INTERFACES).length];
     const interfaceShortName = NETWORK_INTERFACES[interfaceName];
     const interface = interfaces[interfaceName];
 
     renderStat(oled, 'net', `${interfaceShortName} ${interface[0].address || 'Unavailable'}`);
-  });*/
+  });
 
   // CPU processing
-  const cpuInfo$ = timer().pipe(
-    map(async () => {
-      const { speed, cores, physicalCores } = await si.cpu();
+  const cpu$ = concat(
+    timer().pipe(
+      concatMap(async () => {
+        const { speedmax, cores, physicalCores } = await si.cpu();
+        
+        return `CPU ${speedmax}GHz (${physicalCores}/${cores})`;
+      }),
+    ),
+    timer(2000, 500).pipe(
+      take(100),
+      concatMap(async () => {
+        const { avgload, currentload, cpus } = await si.currentLoad();
 
-      return of(`CPU ${speed}GHz (${physicalCores}/${cores} cores)`);
-    }),
-  );
-  
-  const cpuCurrentLoad$ = timer(1000, 500).pipe(
-    take(5), 
-    mapTo('CPU Loaded!')
-    /*map(async () => {
-      const { avgload, currentload, cpus } = await si.currentLoad();
+        return `CPU ${_.round(currentload)}% (${_.round(avgload)}% Av)`;
+      }),
+    ),
+  )
+  .pipe(repeat())
+  .subscribe((text) => {
+    console.log(text);
+    renderStat(oled, 'cpu', text);
+  });
 
-      return of(`CPU ${_.round(currentload)}% Load ${_.round(avgload)}% Avg.`);
-    }),*/
-  );
-  
-  concat(cpuInfo$, cpuCurrentLoad$).subscribe({
-    next: (text) => renderStat(oled, 'cpu', text),
-  );
-  
   // RAM processing
   const memTimer = timer(0, 500);
 
@@ -97,7 +98,7 @@ board.on('ready', () => {
   diskTimer.subscribe(async () => {
     const disks = await si.fsSize();
     const disk = disks[0];
-    
+
     renderStat(oled, 'disk', `DSK ${formatFilesize(disk.used)}/${formatFilesize(disk.size)} ${_.round(disk.use)}%`);
   });
 
@@ -107,9 +108,9 @@ board.on('ready', () => {
   uptimeTimer.subscribe(async () => {
     const { uptime } = await si.time();
 
-    renderStat(oled, 'uptime', `UPT ${prettyMS(uptime)}`);
+    renderStat(oled, 'uptime', `UPT ${prettyMS(uptime * 1000)}`);
   });
-  
+
   // Render update
   /*const renderTimer = timer(500, 1000);
 
@@ -127,12 +128,12 @@ board.on('ready', () => {
 
 function renderStat(oled, key, text) {
   const index = _.indexOf(STATS, key);
-  
+
   oled.drawRect(ORIGIN_X, ORIGIN_Y + (LINE_HEIGHT * index), WIDTH, LINE_HEIGHT, 0);
   oled.setCursor(ORIGIN_X, ORIGIN_Y + (LINE_HEIGHT * index));
   oled.writeString(font, 1, text, 1, false, 0);
 }
 
-function formatFilesize(size) { 
-  return _.replace(filesize(size, { round: 0 }), ' ', ''); 
+function formatFilesize(size) {
+  return _.replace(filesize(size, { round: 0 }), ' ', '');
 }
