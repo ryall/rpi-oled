@@ -59,8 +59,8 @@ board.on('ready', () => {
   });*/
 
   // CPU processing
-  const cpuAction = timer().pipe(
-    mapTo('CPU Loading')
+  const cpuInfo$ = empty().pipe(
+    mapTo('CPU Loading!')
     /*map(async () => {
       const { speed, cores, physicalCores } = await si.cpu();
 
@@ -68,7 +68,7 @@ board.on('ready', () => {
     }),*/
   );
   
-  const cpuCurrentLoadAction = timer(1000, 500).pipe(
+  const cpuCurrentLoad$ = timer(1000, 500).pipe(
     take(5), 
     map(async () => {
       const { avgload, currentload, cpus } = await si.currentLoad();
@@ -77,7 +77,7 @@ board.on('ready', () => {
     }),
   );
   
-  //const cpuRunner = concat(cpuAction, cpuCurrentLoadAction);
+  //const cpuRunner = concat(cpuInfo$, cpuCurrentLoad$);
   
   cpuAction.subscribe((text) => {
     renderStat(oled, 'cpu', text);
