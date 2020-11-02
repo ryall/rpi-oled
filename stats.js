@@ -39,8 +39,10 @@ board.on('ready', () => {
   // Hostname processing
   const hostnameTimer = timer(0, 60000);
 
-  hostnameTimer.subscribe(() => {
-    renderStat(oled, 'host', os.hostname());
+  hostnameTimer.subscribe(async () => {
+    const { hostname } = await si.osInfo();
+    
+    renderStat(oled, 'host', hostname);
   });
 
   // Network interface processing
