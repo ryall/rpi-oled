@@ -1,6 +1,6 @@
 const _ = require('lodash');
-const { of, from, timer, concat, empty } = require('rxjs');
-const { take, map, mapTo, concatMap, repeat } = require('rxjs/operators');
+const { timer, concat } = require('rxjs');
+const { take, concatMap, repeat } = require('rxjs/operators');
 const five = require('johnny-five');
 const { RaspiIO } = require('raspi-io');
 const Oled = require('oled-js');
@@ -50,23 +50,24 @@ board.on('ready', () => {
   const netTimer = timer(0, 5000);
 
   netTimer.subscribe((index) => {
-    const interfaces = os.networkInterfaces();
+    //const interfaces = os.networkInterfaces();
+    const interfaces = await si.networkInterfaces();
     const interfaceName = _.keys(NETWORK_INTERFACES)[index % _.keys(NETWORK_INTERFACES).length];
     const interfaceShortName = NETWORK_INTERFACES[interfaceName];
-    const interface = interfaces[interfaceName];
+    const interface = _.filter(interfaces, (interface) => interface.ifaceName === interfaceName);
 
-    renderStat(oled, 'net', `${interfaceShortName} ${interface[0].address || 'Unavailable'}`);
+    renderStat(oled, 'net', `${interfaceShortName} ${interface.ipv4 || 'Unavailable'}`);
   });
 
   // CPU processing
-  const cpu$ = concat(
+  const cpu$ = /*concat(
     timer().pipe(
       concatMap(async () => {
         const { speedmax, cores, physicalCores } = await si.cpu();
         
         return `CPU ${speedmax}GHz (${physicalCores}/${cores})`;
       }),
-    ),
+    ),*/
     timer(2000, 500).pipe(
       take(100),
       concatMap(async () => {
@@ -74,11 +75,10 @@ board.on('ready', () => {
 
         return `CPU ${_.round(currentload)}% (${_.round(avgload)}% Av)`;
       }),
-    ),
-  )
+    )/*,
+  )*/
   .pipe(repeat())
   .subscribe((text) => {
-    console.log(text);
     renderStat(oled, 'cpu', text);
   });
 
@@ -110,26 +110,13 @@ board.on('ready', () => {
 
     renderStat(oled, 'uptime', `UPT ${prettyMS(uptime * 1000)}`);
   });
-
-  // Render update
-  /*const renderTimer = timer(500, 1000);
-
-  renderTimer.subscribe(() => {
-    oled.clearDisplay();
-
-    let index = 0;
-
-    _.forEach(stats, (text, stat) => {
-      oled.setCursor(ORIGIN_X, ORIGIN_Y + (LINE_HEIGHT * index++));
-      oled.writeString(font, 1, text, 1, false, 0);
-    });
-  });*/
 });
 
 function renderStat(oled, key, text) {
   const index = _.indexOf(STATS, key);
 
   oled.drawRect(ORIGIN_X, ORIGIN_Y + (LINE_HEIGHT * index), WIDTH, LINE_HEIGHT, 0);
+  oled.update();
   oled.setCursor(ORIGIN_X, ORIGIN_Y + (LINE_HEIGHT * index));
   oled.writeString(font, 1, text, 1, false, 0);
 }
