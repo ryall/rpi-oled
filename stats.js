@@ -53,7 +53,7 @@ board.on('ready', () => {
     const interfaceShortName = NETWORK_INTERFACES[interfaceName];
     const interface = interfaces[interfaceName];
 
-    renderStat(oled, 'net', `${interfaceShortName} ${interface[0].address || 'Unavailable'}`;
+    renderStat(oled, 'net', `${interfaceShortName} ${interface[0].address || 'Unavailable'}`);
   });
 
   // CPU processing
