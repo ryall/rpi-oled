@@ -1,5 +1,6 @@
 const _ = require('lodash');
-const { timer, take, concat } = require('rxjs');
+const { timer, concat } = require('rxjs');
+const { take } = require('rxjs/operators');
 const five = require('johnny-five');
 const { RaspiIO } = require('raspi-io');
 const Oled = require('oled-js');
