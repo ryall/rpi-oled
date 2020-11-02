@@ -21,16 +21,7 @@ const ORIGIN_X = 0;
 const ORIGIN_Y = 0;
 const LINE_HEIGHT = 11;
 const NETWORK_INTERFACES = { 'eth0': 'ETH', 'wlan0': 'WFI' }; // { 'device': 'display name' }
-
-// The stat line ordering
-const stats = [
-  'host',
-  'net',
-  'cpu',
-  'mem',
-  'disk',
-  'uptime',
-];
+const STATS = ['host', 'net', 'cpu', 'mem', 'disk', 'uptime'];
 
 board.on('ready', () => {
   // Initialise the display
