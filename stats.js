@@ -7,7 +7,7 @@ const Oled = require('oled-js');
 const filesize = require('filesize');
 const prettyMS = require('pretty-ms');
 const si = require('systeminformation');
-const font = require('./fonts/tahoma-10-bold.font.js');
+const font = require('oled-font-5x7');
 
 const board = new five.Board({
   io: new RaspiIO(),
