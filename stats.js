@@ -115,8 +115,7 @@ board.on('ready', () => {
 function renderStat(oled, key, text) {
   const index = _.indexOf(STATS, key);
 
-  oled.drawRect(ORIGIN_X, ORIGIN_Y + (LINE_HEIGHT * index), WIDTH, LINE_HEIGHT, 0);
-  oled.update();
+  //oled.drawRect(ORIGIN_X, ORIGIN_Y + (LINE_HEIGHT * index), WIDTH, LINE_HEIGHT, 0);
   oled.setCursor(ORIGIN_X, ORIGIN_Y + (LINE_HEIGHT * index));
   oled.writeString(font, 1, text, 1, false, 0);
 }
