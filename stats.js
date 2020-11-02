@@ -55,6 +55,8 @@ board.on('ready', () => {
     const interfaceName = _.keys(NETWORK_INTERFACES)[index % _.keys(NETWORK_INTERFACES).length];
     const interfaceShortName = NETWORK_INTERFACES[interfaceName];
     const interface = _.filter(interfaces, (interface) => interface.ifaceName === interfaceName);
+    
+    console.log(JSON.stringify(interfaces));
 
     renderStat(oled, 'net', `${interfaceShortName} ${interface.ipv4 || 'Unavailable'}`);
   });
