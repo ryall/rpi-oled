@@ -79,7 +79,7 @@ board.on('ready', () => {
   );
   
   concat(cpuInfo$, cpuCurrentLoad$).subscribe({
-    next(text) => renderStat(oled, 'cpu', text),
+    next: (text) => renderStat(oled, 'cpu', text),
   );
   
   // RAM processing
