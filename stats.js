@@ -64,13 +64,11 @@ board.on('ready', () => {
   // RAM processing
   const ramTimer = timer(0, 500);
 
-  ramTimer.subscribe(() => {
-    const free = os.freemem();
-    const total = os.totalmem();
-    const used = total - free;
+  ramTimer.subscribe(async () => {
+    const { total, free, used } = await si.mem();
     const percent = Math.round((used / total) * 100);
 
-    stats.ram = 'RAM: ' + filesize(used, { round: 0 }) + '/' + filesize(total, { round: 0 }) + '(' + percent + '%)';
+    stats.ram = 'RAM: ' + formatFilesize(used) + '/' + formatFilesize(total) + '(' + percent + '%)';
   });
 
   // CPU processing
@@ -112,3 +110,7 @@ board.on('ready', () => {
     });
   });
 });
+
+function formatFilesize(size) { 
+  return _.replace(filesize(size, { round: 0 }), ' ', ''); 
+}
