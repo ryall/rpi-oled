@@ -19,7 +19,7 @@ const ADDRESS = 0x3C;
 const ORIGIN_X = 0;
 const ORIGIN_Y = 0;
 const LINE_HEIGHT = 11;
-const NETWORK_INTERFACES = { 'eth0': 'ETH', 'wlan0': 'WFI' };
+const NETWORK_INTERFACES = { 'eth0': 'ETH', 'wlan0': 'WFI' }; // { 'device': 'display name' }
 
 board.on('ready', () => {
   // Initialise the display
@@ -77,17 +77,25 @@ board.on('ready', () => {
   // CPU processing
   const cpuTimer = timer(0, 500);
 
-  cpuTimer.subscribe(async () => {
+  cpuTimer.subscribe(async (index) => {
+    const { brand speed, cores } = await si.cpu();
     const { avgload, currentload, cpus } = await si.currentLoad();
     
-    stats.cpu = `CPU ${_.round(currentload)} ~${_.round(avgload)}% (${cpus.length})`;
+    switch (index % 2) {
+      case 0: 
+        stats.cpu = `CPU ${_.round(currentload)}% ${_.round(avgload)}% (${cores})`;
+        break;
+      case 1:
+        stats.cpu = `CPU ${brand} ${speed}GHz`;
+        break;
+    }
   });
 
   // Disk processing
   const diskTimer = timer(0, 10000);
 
   diskTimer.subscribe(() => {
-    stats.disk = `Disk `;
+    stats.disk = `DSK `;
   });
 
   // Uptime processing
@@ -96,7 +104,7 @@ board.on('ready', () => {
   uptimeTimer.subscribe(() => {
     const uptime = os.uptime();
 
-    stats.uptime = `Up ${prettyMS(uptime)}`;
+    stats.uptime = `UPT ${prettyMS(uptime)}`;
   });
   
   // Render update
