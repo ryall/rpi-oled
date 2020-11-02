@@ -78,7 +78,7 @@ board.on('ready', () => {
   const cpuTimer = timer(0, 500);
 
   cpuTimer.subscribe(async (index) => {
-    const { brand speed, cores } = await si.cpu();
+    const { brand, speed, cores } = await si.cpu();
     const { avgload, currentload, cpus } = await si.currentLoad();
     
     switch (index % 2) {
