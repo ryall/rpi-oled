@@ -80,7 +80,7 @@ board.on('ready', () => {
   cpuTimer.subscribe(async () => {
     const { avgload, currentload, cpus } = await si.currentLoad();
     
-    stats.cpu = `CPU: ${currentload} ~${avgload}% (${cpus.length})`;
+    stats.cpu = `CPU: ${_.round(currentload)} ~${_.round(avgload)}% (${cpus.length})`;
   });
 
   // Disk processing
