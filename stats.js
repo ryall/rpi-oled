@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const { of, timer, concat, empty } = require('rxjs');
-const { take, map, concatMap } = require('rxjs/operators');
+const { take, map, mapTo, concatMap } = require('rxjs/operators');
 const five = require('johnny-five');
 const { RaspiIO } = require('raspi-io');
 const Oled = require('oled-js');
@@ -60,11 +60,12 @@ board.on('ready', () => {
 
   // CPU processing
   const cpuAction = timer().pipe(
-    concatMap(async () => {
+    mapTo('CPU Loading')
+    /*map(async () => {
       const { speed, cores, physicalCores } = await si.cpu();
 
       return of(`CPU ${speed}GHz (${physicalCores}/${cores} cores)`);
-    }),
+    }),*/
   );
   
   const cpuCurrentLoadAction = timer(1000, 500).pipe(
