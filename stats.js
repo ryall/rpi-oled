@@ -94,7 +94,7 @@ board.on('ready', () => {
   // Disk processing
   const diskTimer = timer(0, 10000);
 
-  diskTimer.subscribe(() => {
+  diskTimer.subscribe(async () => {
     const disks = await si.fsSize();
     const disk = disks[0];
     
