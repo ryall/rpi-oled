@@ -43,7 +43,7 @@ board.on('ready', () => {
   hostname$.subscribe(async () => {
     const { hostname } = await si.osInfo();
 
-    renderStat(oled, 'host', `HST ${hostname}`);
+    renderStat(oled, 'host', hostname);
   });
 
   // Network interface processing
@@ -73,7 +73,7 @@ board.on('ready', () => {
         const { avgload, currentload, cpus } = await si.currentLoad();
         const { main: maintemp } = await si.cpuTemperature();
 
-        return `CPU ${_.round(currentload)}% (${_.round(maintemp)}*C)`;
+        return `CPU ${_.round(currentload)}% (${_.round(maintemp)}C)`;
       }),
     )/*,
   )*/
