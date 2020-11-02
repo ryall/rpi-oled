@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const { timer, concat, empty } = require('rxjs');
+const { of, timer, concat, empty } = require('rxjs');
 const { take, map } = require('rxjs/operators');
 const five = require('johnny-five');
 const { RaspiIO } = require('raspi-io');
@@ -63,7 +63,7 @@ board.on('ready', () => {
     map(async () => {
       const { speed, cores, physicalCores } = await si.cpu();
 
-      return `CPU ${speed}GHz (${physicalCores}/${cores} cores)`;
+      return of(`CPU ${speed}GHz (${physicalCores}/${cores} cores)`);
     }),
   );
   
@@ -72,7 +72,7 @@ board.on('ready', () => {
     map(async () => {
       const { avgload, currentload, cpus } = await si.currentLoad();
 
-      return `CPU ${_.round(currentload)}% Load ${_.round(avgload)}% Avg.`;
+      return of(`CPU ${_.round(currentload)}% Load ${_.round(avgload)}% Avg.`);
     }),
   );
   
