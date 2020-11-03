@@ -90,7 +90,8 @@ mem$.subscribe(async () => {
 const disk$ = timer(1000, 10000);
 
 disk$.subscribe(async () => {
-  const disks = await si.fsSize();
+  // Too slow, so using an alternative
+  const disks = await si.fsSize(); 
   const disk = disks[0];
 
   renderStat(oled, 'disk', `DSK ${formatFilesize(disk.used)}/${formatFilesize(disk.size)} ${_.round(disk.use)}%`);
