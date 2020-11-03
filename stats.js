@@ -56,14 +56,15 @@ net$.subscribe(async (index) => {
 
 // CPU processing
 const cpu$ = concat(
-  timer().pipe(
+  timer(0, getScaledUpdateTime(2500)).pipe(
+    take(1),
     concatMap(async () => {
       const { speedmax, cores, physicalCores } = await si.cpu();
 
       return `CPU ${speedmax}GHz (${physicalCores}/${cores})`;
     }),
   ),
-  timer(getScaledUpdateTime(2500), getScaledUpdateTime(5000)).pipe(
+  timer(0, getScaledUpdateTime(5000)).pipe(
     take(12),
     concatMap(async () => {
       const { avgload, currentload, cpus } = await si.currentLoad();
@@ -89,10 +90,9 @@ mem$.subscribe(async () => {
 });
 
 // Disk processing
-const disk$ = timer(getStartTimeOffset('disk'), getScaledUpdateTime(10000));
+const disk$ = timer(getStartTimeOffset('disk'), getScaledUpdateTime(60000));
 
 disk$.subscribe(async () => {
-  // Too slow, so using an alternative
   const disks = await si.fsSize(); 
   const disk = disks[0];
 
