@@ -30,8 +30,7 @@ const oled = new Oled(i2cBus, {
 });
 
 // Clear the screen
-oled.clearDisplay();
-oled.update();
+clearScreen();
 
 // Hostname processing
 const hostname$ = timer(getStartTimeOffset('host'), getScaledUpdateTime(60000));
@@ -108,6 +107,12 @@ uptime$.subscribe(async () => {
   renderStat(oled, 'uptime', `UPT ${prettyMS(uptime * 1000)}`);
 });
 
+// Helper functions
+function clearScreen() {
+  oled.clearDisplay();
+  oled.update(); 
+}
+
 function renderStat(oled, key, text) {
   const index = _.indexOf(STATS, key);
 
@@ -127,3 +132,8 @@ function getScaledUpdateTime(time) {
 function formatFilesize(size) {
   return _.replace(filesize(size, { round: 0 }), ' ', '');
 }
+
+// On exit, clear the screen
+process.on('exit', () => {
+  clearScreen();
+});
