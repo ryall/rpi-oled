@@ -61,8 +61,8 @@ const cpu$ = concat(
       return `CPU ${speedmax}GHz (${physicalCores}/${cores})`;
     }),
   ),
-  timer(2000, 500).pipe(
-    take(100),
+  timer(5000, 5000).pipe(
+    take(11), // 55s
     concatMap(async () => {
       const { avgload, currentload, cpus } = await si.currentLoad();
       const { main: maintemp } = await si.cpuTemperature();
@@ -77,7 +77,7 @@ const cpu$ = concat(
 });
 
 // RAM processing
-const mem$ = timer(0, 500);
+const mem$ = timer(0, 5000);
 
 mem$.subscribe(async () => {
   const { total, free, used } = await si.mem();
