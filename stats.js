@@ -9,10 +9,6 @@ const filesize = require('filesize');
 const prettyMS = require('pretty-ms');
 const si = require('systeminformation');
 
-const board = new five.Board({
-  io: new RaspiIO(),
-});
-
 // Configurable options
 const WIDTH = 128;
 const HEIGHT = 64;
@@ -23,7 +19,16 @@ const LINE_HEIGHT = 11;
 const NETWORK_INTERFACES = { 'eth0': 'ETH', 'wlan0': 'WFI' }; // { 'device': 'display name' }
 const STATS = ['host', 'net', 'cpu', 'mem', 'disk', 'uptime'];
 
+// Initialise board
+console.log('Initialising RPi IO...');
+
+const board = new five.Board({
+  io: new RaspiIO(),
+});
+
 board.on('ready', () => {
+  console.log('IO initialised');
+  
   // Initialise the display
   const opts = {
     width: WIDTH,
@@ -31,11 +36,11 @@ board.on('ready', () => {
     address: ADDRESS,
   };
 
-  const oled = new Oled(board, five, opts);
+  //const oled = new Oled(board, five, opts);
 
   // Clear the screen
-  oled.clearDisplay();
-  oled.update();
+  //oled.clearDisplay();
+  //oled.update();
 
   // Hostname processing
   /*const hostname$ = timer(0, 60000);
