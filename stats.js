@@ -32,80 +32,84 @@ const oled = new Oled(i2cBus, {
 // Clear the screen
 clearScreen();
 
+// Track the subscriptions
+const subscriptions = {};
+
 // Hostname processing
-const hostname$ = timer(getStartTimeOffset('host'), getScaledUpdateTime(60000));
+subscriptions.host$ = 
+  timer(getStartTimeOffset('host'), getScaledUpdateTime(60000))
+  .subscribe(async () => {
+    const { hostname } = await si.osInfo();
 
-hostname$.subscribe(async () => {
-  const { hostname } = await si.osInfo();
-
-  renderStat(oled, 'host', hostname);
-});
+    renderStat(oled, 'host', hostname);
+  });
 
 // Network interface processing
-const net$ = timer(getStartTimeOffset('net'), getScaledUpdateTime(5000));
+subscriptions.net$ = 
+  timer(getStartTimeOffset('net'), getScaledUpdateTime(5000))
+  .subscribe(async (index) => {
+    const interfaces = await si.networkInterfaces();
+    const interfaceName = _.keys(NETWORK_INTERFACES)[index % _.keys(NETWORK_INTERFACES).length];
+    const interfaceShortName = NETWORK_INTERFACES[interfaceName];
+    const interface = _.filter(interfaces, (interface) => interface.iface === interfaceName);
 
-net$.subscribe(async (index) => {
-  const interfaces = await si.networkInterfaces();
-  const interfaceName = _.keys(NETWORK_INTERFACES)[index % _.keys(NETWORK_INTERFACES).length];
-  const interfaceShortName = NETWORK_INTERFACES[interfaceName];
-  const interface = _.filter(interfaces, (interface) => interface.iface === interfaceName);
-
-  renderStat(oled, 'net', `${interfaceShortName} ${interface[0].ip4 || 'Unavailable'}`);
-});
+    renderStat(oled, 'net', `${interfaceShortName} ${interface[0].ip4 || 'Unavailable'}`);
+  });
 
 // CPU processing
-const cpu$ = concat(
-  timer(0, getScaledUpdateTime(5000)).pipe(
-    take(1),
-    concatMap(async () => {
-      const { speedmax, cores, physicalCores } = await si.cpu();
+subscriptions.cpu$ = 
+  concat(
+    timer(0, getScaledUpdateTime(5000)).pipe(
+      take(1),
+      concatMap(async () => {
+        const { speedmax, cores, physicalCores } = await si.cpu();
 
-      return `CPU ${speedmax}GHz (${physicalCores}/${cores})`;
-    }),
-  ),
-  timer(0, getScaledUpdateTime(5000)).pipe(
-    take(12),
-    concatMap(async () => {
-      const { avgload, currentload, cpus } = await si.currentLoad();
-      const { main: avgtemp } = await si.cpuTemperature();
+        return `CPU ${speedmax}GHz (${physicalCores}/${cores})`;
+      }),
+    ),
+    timer(0, getScaledUpdateTime(5000)).pipe(
+      take(12),
+      concatMap(async () => {
+        const { avgload, currentload, cpus } = await si.currentLoad();
+        const { main: avgtemp } = await si.cpuTemperature();
 
-      return `CPU ${_.round(currentload)}% (${_.round(avgtemp)}C)`;
-    }),
-  ),
-)
-.pipe(delay(getStartTimeOffset('cpu')), repeat())
-.subscribe((text) => {
-  renderStat(oled, 'cpu', text);
-});
+        return `CPU ${_.round(currentload)}% (${_.round(avgtemp)}C)`;
+      }),
+    ),
+  )
+  .pipe(delay(getStartTimeOffset('cpu')), repeat())
+  .subscribe((text) => {
+    renderStat(oled, 'cpu', text);
+  });
 
 // RAM processing
-const mem$ = timer(getStartTimeOffset('mem'), getScaledUpdateTime(5000));
+subscriptions.mem$ = 
+  timer(getStartTimeOffset('mem'), getScaledUpdateTime(5000))
+  .subscribe(async () => {
+    const { total, free, used } = await si.mem();
+    const percent = _.round((used / total) * 100);
 
-mem$.subscribe(async () => {
-  const { total, free, used } = await si.mem();
-  const percent = _.round((used / total) * 100);
-
-  renderStat(oled, 'mem', `MEM ${formatFilesize(used)}/${formatFilesize(total)} ${percent}%`);
-});
+    renderStat(oled, 'mem', `MEM ${formatFilesize(used)}/${formatFilesize(total)} ${percent}%`);
+  });
 
 // Disk processing
-const disk$ = timer(getStartTimeOffset('disk'), getScaledUpdateTime(60000));
+subscriptions.disk$ = 
+  timer(getStartTimeOffset('disk'), getScaledUpdateTime(60000))
+  .subscribe(async () => {
+    const disks = await si.fsSize(); 
+    const disk = disks[0];
 
-disk$.subscribe(async () => {
-  const disks = await si.fsSize(); 
-  const disk = disks[0];
-
-  renderStat(oled, 'disk', `DSK ${formatFilesize(disk.used)}/${formatFilesize(disk.size)} ${_.round(disk.use)}%`);
-});
+    renderStat(oled, 'disk', `DSK ${formatFilesize(disk.used)}/${formatFilesize(disk.size)} ${_.round(disk.use)}%`);
+  });
 
 // Uptime processing
-const uptime$ = timer(getStartTimeOffset('uptime'), getScaledUpdateTime(5000));
+subscriptions.uptime$ = 
+  timer(getStartTimeOffset('uptime'), getScaledUpdateTime(5000))
+  .subscribe(async () => {
+    const { uptime } = await si.time();
 
-uptime$.subscribe(async () => {
-  const { uptime } = await si.time();
-
-  renderStat(oled, 'uptime', `UPT ${prettyMS(uptime * 1000)}`);
-});
+    renderStat(oled, 'uptime', `UPT ${prettyMS(uptime * 1000)}`);
+  });
 
 // Helper functions
 function clearScreen() {
@@ -135,9 +139,14 @@ function formatFilesize(size) {
 
 // On exit, clear the screen
 function shutdown() {
-  clearScreen();
+  _.forEach(subscriptions, (subscription) => {
+    subscription.unsubscribe();
+  });
   
-  //process.exit();
+  clearScreen();
+  sleep(1000);
+  
+  process.exit();
 }
 
 process.on('SIGINT', shutdown);
