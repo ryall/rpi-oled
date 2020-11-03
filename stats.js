@@ -47,7 +47,7 @@ board.on('ready', () => {
   });
 
   // Network interface processing
-  const net$ = timer(0, 5000);
+  /*const net$ = timer(0, 5000);
 
   net$.subscribe(async (index) => {
     const interfaces = await si.networkInterfaces();
@@ -56,17 +56,17 @@ board.on('ready', () => {
     const interface = _.filter(interfaces, (interface) => interface.iface === interfaceName);
     
     renderStat(oled, 'net', `${interfaceShortName} ${interface[0].ip4 || 'Unavailable'}`);
-  });
+  });*/
 
   // CPU processing
-  const cpu$ = /*concat(
+  /*const cpu$ = concat(
     timer().pipe(
       concatMap(async () => {
         const { speedmax, cores, physicalCores } = await si.cpu();
         
         return `CPU ${speedmax}GHz (${physicalCores}/${cores})`;
       }),
-    ),*/
+    ),
     timer(2000, 500).pipe(
       take(100),
       concatMap(async () => {
@@ -76,40 +76,40 @@ board.on('ready', () => {
         return `CPU ${_.round(currentload)}% (${_.round(maintemp)}C)`;
       }),
     )/*,
-  )*/
+  )
   .pipe(repeat())
   .subscribe((text) => {
     renderStat(oled, 'cpu', text);
-  });
+  });*/
 
   // RAM processing
-  const mem$ = timer(0, 500);
+  /*const mem$ = timer(0, 500);
 
   mem$.subscribe(async () => {
     const { total, free, used } = await si.mem();
     const percent = _.round((used / total) * 100);
 
     renderStat(oled, 'mem', `MEM ${formatFilesize(used)}/${formatFilesize(total)} ${percent}%`);
-  });
-
+  });*/
+  
   // Disk processing
-  const disk$ = timer(0, 10000);
+  /*const disk$ = timer(0, 10000);
 
   disk$.subscribe(async () => {
     const disks = await si.fsSize();
     const disk = disks[0];
 
     renderStat(oled, 'disk', `DSK ${formatFilesize(disk.used)}/${formatFilesize(disk.size)} ${_.round(disk.use)}%`);
-  });
+  });*/
 
   // Uptime processing
-  const uptime$ = timer(0, 1000);
+  /*const uptime$ = timer(0, 1000);
 
   uptime$.subscribe(async () => {
     const { uptime } = await si.time();
 
     renderStat(oled, 'uptime', `UPT ${prettyMS(uptime * 1000)}`);
-  });
+  });*/
 });
 
 function renderStat(oled, key, text) {
