@@ -59,15 +59,14 @@ subscriptions.net$ =
 // CPU processing
 subscriptions.cpu$ = 
   concat(
-    timer(0, getScaledUpdateTime(5000)).pipe(
-      take(1),
+    timer().pipe(
       concatMap(async () => {
         const { speedmax, cores, physicalCores } = await si.cpu();
 
         return `CPU ${speedmax}GHz (${physicalCores}/${cores})`;
       }),
     ),
-    timer(0, getScaledUpdateTime(2500)).pipe(
+    timer(getScaledUpdateTime(5000), getScaledUpdateTime(2500)).pipe(
       take(24),
       concatMap(async () => {
         const { avgload, currentload, cpus } = await si.currentLoad();
