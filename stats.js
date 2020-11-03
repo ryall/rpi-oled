@@ -134,5 +134,11 @@ function formatFilesize(size) {
 }
 
 // On exit, clear the screen
-process.on('exit', clearScreen);
-process.on('SIGINT', process.exit);
+function shutdown() {
+  clearScreen();
+  
+  process.exit();
+}
+
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
