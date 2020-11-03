@@ -24,4 +24,4 @@ Script to display RPi stats on an I2C 128x64 OLED display.
 ### Cron
 
 - Run on startup by editing the crontab: `crontab -e`
-- Add the following line: `@reboot sudo node ~/rpi-oled/stats.js`
+- Add the line: `@reboot sudo node ~/rpi-oled/stats.js`
