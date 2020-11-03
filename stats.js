@@ -56,7 +56,7 @@ net$.subscribe(async (index) => {
 
 // CPU processing
 const cpu$ = concat(
-  timer(0, getScaledUpdateTime(2500)).pipe(
+  timer(0, getScaledUpdateTime(5000)).pipe(
     take(1),
     concatMap(async () => {
       const { speedmax, cores, physicalCores } = await si.cpu();
