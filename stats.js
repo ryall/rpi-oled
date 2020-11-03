@@ -67,8 +67,8 @@ subscriptions.cpu$ =
         return `CPU ${speedmax}GHz (${physicalCores}/${cores})`;
       }),
     ),
-    timer(0, getScaledUpdateTime(5000)).pipe(
-      take(12),
+    timer(0, getScaledUpdateTime(2500)).pipe(
+      take(24),
       concatMap(async () => {
         const { avgload, currentload, cpus } = await si.currentLoad();
         const { main: avgtemp } = await si.cpuTemperature();
