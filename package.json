@@ -9,7 +9,6 @@
     "lodash": "^4.17.20",
     "oled-font-5x7": "^1.0.3",
     "oled-i2c-bus": "^1.0.11",
-    "oled-js": "^5.1.2",
     "pretty-ms": "^7.0.1",
     "rxjs": "^6.6.3",
     "systeminformation": "^4.27.11"
