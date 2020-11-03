@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const { timer, concat } = require('rxjs');
-const { take, concatMap, repeat } = require('rxjs/operators');
+const { take, concatMap, delay, repeat } = require('rxjs/operators');
 const i2c = require('i2c-bus');
 const Oled = require('oled-i2c-bus');
 const font = require('oled-font-5x7');
@@ -41,7 +41,7 @@ hostname$.subscribe(async () => {
 });
 
 // Network interface processing
-const net$ = timer(0, 5000);
+const net$ = timer(250, 5000);
 
 net$.subscribe(async (index) => {
   const interfaces = await si.networkInterfaces();
@@ -61,23 +61,23 @@ const cpu$ = concat(
       return `CPU ${speedmax}GHz (${physicalCores}/${cores})`;
     }),
   ),
-  timer(5000, 5000).pipe(
-    take(11), // 55s
+  timer(2500, 5000).pipe(
+    take(12),
     concatMap(async () => {
       const { avgload, currentload, cpus } = await si.currentLoad();
-      const { main: maintemp } = await si.cpuTemperature();
+      const { main: avgtemp } = await si.cpuTemperature();
 
-      return `CPU ${_.round(currentload)}% (${_.round(maintemp)}C)`;
+      return `CPU ${_.round(currentload)}% (${_.round(avgtemp)}C)`;
     }),
   ),
 )
-.pipe(repeat())
+.pipe(delay(500), repeat())
 .subscribe((text) => {
   renderStat(oled, 'cpu', text);
 });
 
 // RAM processing
-const mem$ = timer(0, 5000);
+const mem$ = timer(750, 5000);
 
 mem$.subscribe(async () => {
   const { total, free, used } = await si.mem();
@@ -87,7 +87,7 @@ mem$.subscribe(async () => {
 });
 
 // Disk processing
-const disk$ = timer(0, 10000);
+const disk$ = timer(1000, 10000);
 
 disk$.subscribe(async () => {
   const disks = await si.fsSize();
@@ -97,7 +97,7 @@ disk$.subscribe(async () => {
 });
 
 // Uptime processing
-const uptime$ = timer(0, 1000);
+const uptime$ = timer(1250, 5000);
 
 uptime$.subscribe(async () => {
   const { uptime } = await si.time();
