@@ -137,7 +137,7 @@ function formatFilesize(size) {
 function shutdown() {
   clearScreen();
   
-  process.exit();
+  //process.exit();
 }
 
 process.on('SIGINT', shutdown);
