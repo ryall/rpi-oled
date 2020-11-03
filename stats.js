@@ -22,11 +22,11 @@ const STATS = ['host', 'net', 'cpu', 'mem', 'disk', 'uptime'];
 // Initialise board
 console.log('Initialising RPi IO...');
 
-const board = new five.Board({
+/*const board = new five.Board({
   io: new RaspiIO(),
-});
+});*/
 
-board.on('ready', () => {
+/*board.on('ready', () => {
   console.log('IO initialised');
   
   // Initialise the display
@@ -34,7 +34,7 @@ board.on('ready', () => {
     width: WIDTH,
     height: HEIGHT,
     address: ADDRESS,
-  };
+  };*/
 
   //const oled = new Oled(board, five, opts);
 
@@ -115,7 +115,7 @@ board.on('ready', () => {
 
     renderStat(oled, 'uptime', `UPT ${prettyMS(uptime * 1000)}`);
   });*/
-});
+//});
 
 function renderStat(oled, key, text) {
   const index = _.indexOf(STATS, key);
