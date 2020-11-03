@@ -10,7 +10,8 @@ Script to display RPi stats on an I2C 128x64 OLED display.
 
 ## Installation
 
-- Install system dependencies: `sudo apt install -y git nodejs npm pigpio`
+- Install system dependencies: `sudo apt install -y curl git pigpio`
+- Install NodeJS: `curl -sL https://deb.nodesource.com/setup_lts.x | sudo -E bash - && sudo apt install -y nodejs`
 - Clone the repository: `git clone https://github.com/ryall/rpi-oled.git`
 - Go to the new directory: `cd rpi-oled`
 - Install Yarn (optional): `npm i -g yarn`
