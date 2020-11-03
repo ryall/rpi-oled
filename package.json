@@ -5,6 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "filesize": "^6.1.0",
+    "i2c-bus": "^5.2.1",
     "lodash": "^4.17.20",
     "oled-font-5x7": "^1.0.3",
     "oled-i2c-bus": "^1.0.11",
