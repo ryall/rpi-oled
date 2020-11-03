@@ -144,9 +144,8 @@ function shutdown() {
   });
   
   clearScreen();
-  sleep(1000);
   
-  process.exit();
+  timer(1000).subscribe(process.exit);
 }
 
 process.on('SIGINT', shutdown);
