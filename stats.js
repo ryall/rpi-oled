@@ -10,6 +10,8 @@ const si = require('systeminformation');
 
 // Configurable options
 const I2C_BUS_INDEX = 1;
+const UPDATE_TIME_OFFSET = 500;
+const UPDATE_TIME_MULTIPLIER = 2; // Increase this to lower CPU usage
 const WIDTH = 128;
 const HEIGHT = 64;
 const ADDRESS = 0x3C;
@@ -32,7 +34,7 @@ oled.clearDisplay();
 oled.update();
 
 // Hostname processing
-const hostname$ = timer(0, 60000);
+const hostname$ = timer(getStartTimeOffset('host'), getScaledUpdateTime(60000));
 
 hostname$.subscribe(async () => {
   const { hostname } = await si.osInfo();
@@ -41,7 +43,7 @@ hostname$.subscribe(async () => {
 });
 
 // Network interface processing
-const net$ = timer(250, 5000);
+const net$ = timer(getStartTimeOffset('net'), getScaledUpdateTime(5000));
 
 net$.subscribe(async (index) => {
   const interfaces = await si.networkInterfaces();
@@ -61,7 +63,7 @@ const cpu$ = concat(
       return `CPU ${speedmax}GHz (${physicalCores}/${cores})`;
     }),
   ),
-  timer(2500, 5000).pipe(
+  timer(getScaledUpdateTime(2500), getScaledUpdateTime(5000)).pipe(
     take(12),
     concatMap(async () => {
       const { avgload, currentload, cpus } = await si.currentLoad();
@@ -71,13 +73,13 @@ const cpu$ = concat(
     }),
   ),
 )
-.pipe(delay(500), repeat())
+.pipe(delay(getStartTimeOffset('cpu')), repeat())
 .subscribe((text) => {
   renderStat(oled, 'cpu', text);
 });
 
 // RAM processing
-const mem$ = timer(750, 5000);
+const mem$ = timer(getStartTimeOffset('mem'), getScaledUpdateTime(5000));
 
 mem$.subscribe(async () => {
   const { total, free, used } = await si.mem();
@@ -87,7 +89,7 @@ mem$.subscribe(async () => {
 });
 
 // Disk processing
-const disk$ = timer(1000, 10000);
+const disk$ = timer(getStartTimeOffset('disk'), getScaledUpdateTime(10000));
 
 disk$.subscribe(async () => {
   // Too slow, so using an alternative
@@ -98,7 +100,7 @@ disk$.subscribe(async () => {
 });
 
 // Uptime processing
-const uptime$ = timer(1250, 5000);
+const uptime$ = timer(getStartTimeOffset('uptime'), getScaledUpdateTime(5000));
 
 uptime$.subscribe(async () => {
   const { uptime } = await si.time();
@@ -112,6 +114,14 @@ function renderStat(oled, key, text) {
   oled.fillRect(ORIGIN_X, ORIGIN_Y + (LINE_HEIGHT * index), WIDTH, LINE_HEIGHT, 0);
   oled.setCursor(ORIGIN_X, ORIGIN_Y + (LINE_HEIGHT * index));
   oled.writeString(font, 1, text, 1, false, 0);
+}
+
+function getStartTimeOffset(key) {
+  return _.indexOf(STATS, key) * UPDATE_TIME_OFFSET;
+}
+
+function getScaledUpdateTime(time) {
+  return _.round(time * UPDATE_TIME_MULTIPLIER);
 }
 
 function formatFilesize(size) {
