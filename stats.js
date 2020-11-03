@@ -38,13 +38,13 @@ board.on('ready', () => {
   oled.update();
 
   // Hostname processing
-  const hostname$ = timer(0, 60000);
+  /*const hostname$ = timer(0, 60000);
 
   hostname$.subscribe(async () => {
     const { hostname } = await si.osInfo();
 
     renderStat(oled, 'host', hostname);
-  });
+  });*/
 
   // Network interface processing
   /*const net$ = timer(0, 5000);
