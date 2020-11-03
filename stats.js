@@ -10,8 +10,8 @@ const si = require('systeminformation');
 
 // Configurable options
 const I2C_BUS_INDEX = 1;
-const UPDATE_TIME_OFFSET = 500;
-const UPDATE_TIME_MULTIPLIER = 2; // Increase this to lower CPU usage
+const UPDATE_TIME_OFFSET = 500; // Time in MS between each line scheduler starting, to stagger CPU stress
+const UPDATE_TIME_MULTIPLIER = 1; // Increase this to lower CPU usage
 const WIDTH = 128;
 const HEIGHT = 64;
 const ADDRESS = 0x3C;
