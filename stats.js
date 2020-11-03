@@ -20,39 +20,35 @@ const NETWORK_INTERFACES = { 'eth0': 'ETH', 'wlan0': 'WFI' }; // { 'device': 'di
 const STATS = ['host', 'net', 'cpu', 'mem', 'disk', 'uptime'];
 
 // Initialise board
-console.log('Initialising RPi IO...');
-
-/*const board = new five.Board({
+const board = new five.Board({
   io: new RaspiIO(),
-});*/
+});
 
-/*board.on('ready', () => {
-  console.log('IO initialised');
-  
+board.on('ready', () => {
   // Initialise the display
   const opts = {
     width: WIDTH,
     height: HEIGHT,
     address: ADDRESS,
-  };*/
+  };
 
-  //const oled = new Oled(board, five, opts);
+  const oled = new Oled(board, five, opts);
 
   // Clear the screen
-  //oled.clearDisplay();
-  //oled.update();
+  oled.clearDisplay();
+  oled.update();
 
   // Hostname processing
-  /*const hostname$ = timer(0, 60000);
+  const hostname$ = timer(0, 60000);
 
   hostname$.subscribe(async () => {
     const { hostname } = await si.osInfo();
 
     renderStat(oled, 'host', hostname);
-  });*/
+  });
 
   // Network interface processing
-  /*const net$ = timer(0, 5000);
+  const net$ = timer(0, 5000);
 
   net$.subscribe(async (index) => {
     const interfaces = await si.networkInterfaces();
@@ -61,10 +57,10 @@ console.log('Initialising RPi IO...');
     const interface = _.filter(interfaces, (interface) => interface.iface === interfaceName);
     
     renderStat(oled, 'net', `${interfaceShortName} ${interface[0].ip4 || 'Unavailable'}`);
-  });*/
+  });
 
   // CPU processing
-  /*const cpu$ = concat(
+  const cpu$ = concat(
     timer().pipe(
       concatMap(async () => {
         const { speedmax, cores, physicalCores } = await si.cpu();
@@ -80,42 +76,42 @@ console.log('Initialising RPi IO...');
 
         return `CPU ${_.round(currentload)}% (${_.round(maintemp)}C)`;
       }),
-    )/*,
+    ),
   )
   .pipe(repeat())
   .subscribe((text) => {
     renderStat(oled, 'cpu', text);
-  });*/
+  });
 
   // RAM processing
-  /*const mem$ = timer(0, 500);
+  const mem$ = timer(0, 500);
 
   mem$.subscribe(async () => {
     const { total, free, used } = await si.mem();
     const percent = _.round((used / total) * 100);
 
     renderStat(oled, 'mem', `MEM ${formatFilesize(used)}/${formatFilesize(total)} ${percent}%`);
-  });*/
+  });
   
   // Disk processing
-  /*const disk$ = timer(0, 10000);
+  const disk$ = timer(0, 10000);
 
   disk$.subscribe(async () => {
     const disks = await si.fsSize();
     const disk = disks[0];
 
     renderStat(oled, 'disk', `DSK ${formatFilesize(disk.used)}/${formatFilesize(disk.size)} ${_.round(disk.use)}%`);
-  });*/
+  });
 
   // Uptime processing
-  /*const uptime$ = timer(0, 1000);
+  const uptime$ = timer(0, 1000);
 
   uptime$.subscribe(async () => {
     const { uptime } = await si.time();
 
     renderStat(oled, 'uptime', `UPT ${prettyMS(uptime * 1000)}`);
-  });*/
-//});
+  });
+});
 
 function renderStat(oled, key, text) {
   const index = _.indexOf(STATS, key);
